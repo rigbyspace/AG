@@ -11,16 +11,24 @@ import { renderOperatorPlayground } from './panels/operator-playground.js';
 import { renderSommerfeldDescent } from './panels/sommerfeld-descent.js';
 import { renderMediantTree } from './panels/mediant-tree.js';
 import { renderGravityCoupling } from './panels/gravity-coupling.js';
+import { renderDerivations } from './panels/derivations.js';
+import { renderGlossary } from './panels/glossary.js';
+import { renderParticleGen } from './panels/particle-gen.js';
+import { renderCalculator } from './panels/rs-calculator.js';
 
 const panels = [
   { id: 'vacuum-clock', label: 'Vacuum Clock', icon: '⏱', render: renderVacuumClock },
   { id: 'psi-orbit', label: 'ψ-Orbit', icon: 'ψ', render: renderPsiOrbit },
   { id: 'constant-lattice', label: 'Constant Lattice', icon: '⊞', render: renderConstantLattice },
   { id: 'particle-table', label: 'Particle Table', icon: '⚛', render: renderParticleTable },
+  { id: 'particle-gen', label: 'Particle Generator', icon: 'G', render: renderParticleGen },
   { id: 'operator-playground', label: 'Operator Playground', icon: 'λ', render: renderOperatorPlayground },
   { id: 'sommerfeld-descent', label: 'Sommerfeld Descent', icon: '∇', render: renderSommerfeldDescent },
   { id: 'mediant-tree', label: 'Mediant Tree', icon: '⊕', render: renderMediantTree },
   { id: 'gravity-coupling', label: 'Gravity Coupling', icon: 'η', render: renderGravityCoupling },
+  { id: 'derivations', label: 'Physics Derivations', icon: '∂', render: renderDerivations },
+  { id: 'rs-calculator', label: 'RS Calculator', icon: '≡', render: renderCalculator },
+  { id: 'glossary', label: 'Glossary', icon: '𝔾', render: renderGlossary },
 ];
 
 let activePanel = 'vacuum-clock';

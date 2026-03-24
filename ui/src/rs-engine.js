@@ -225,11 +225,13 @@ export function lucasNumber(n) {
 
 /**
  * Fibonacci number F(n) via η-ray. F(1)=1, F(2)=1.
+ * η^k(1,1) = (F(k+2), F(k+1)), so F(n) is the denominator at step n-1.
  */
 export function fibonacciNumber(n) {
   if (n <= 0) return 0;
+  if (n === 1) return 1;
   const state = etaRay(n - 1);
-  return state[0]; // η^(n-1)(1,1) = (F(n+1), F(n)) → numerator for n-1 steps is F(n)
+  return state[1]; // η^(n-1)(1,1) = (F(n+1), F(n)) → denominator is F(n)
 }
 
 /**
@@ -378,7 +380,10 @@ export function deriveConstants() {
   const D_alpha = [alpha_inv_int, N*N*N, 1, N, delta_slip, N*Sigma_imb, 1, 1, tau10];
   // [137, 27, 1, 3, 2, 21, 1, 1, 10]
   const convergents = cfConvergents(D_alpha);
-  const sommerfeldPair = convergents[convergents.length - 1]; // [p_alpha, q_alpha]
+  // CF convergent recurrence gives [numerator, denominator] = [q_α, p_α] in the
+  // RS convention where α ≈ p_α/q_α. Swap to store as (p_α, q_α).
+  const finalConv = convergents[convergents.length - 1];
+  const sommerfeldPair = [finalConv[1], finalConv[0]]; // [p_alpha=115331, q_alpha=15804499]
 
   // ── Phi-oscillator ──
   const phiOsc = [7477, 4621];
