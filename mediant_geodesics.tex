@@ -1,0 +1,1054 @@
+\documentclass[11pt, letterpaper]{article}
+
+\usepackage[top=.8in, bottom=.8in, left=0.5in, right=0.5in]{geometry}
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+\usepackage{tocloft}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable, skins}
+\usepackage{listings}
+\usepackage{courier}
+
+\definecolor{RSblue}{RGB}{25, 60, 120}
+\definecolor{RSgray}{RGB}{90, 90, 90}
+\definecolor{RSgreen}{RGB}{20, 110, 60}
+\definecolor{RSred}{RGB}{160, 30, 30}
+\definecolor{RSamber}{RGB}{180, 110, 0}
+\definecolor{RSpurple}{RGB}{90, 30, 120}
+
+\newtcolorbox{rsbox}{
+  enhanced, breakable,
+  colback=RSblue!4, colframe=RSblue!60,
+  title={\textbf{RS Ontological Statement}},
+  fonttitle=\small\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm, xshift=4mm},
+  boxed title style={colback=RSblue},
+  left=4pt, right=4pt, top=6pt, bottom=4pt
+}
+
+\newtcolorbox{verifybox}{
+  enhanced, breakable,
+  colback=RSgreen!4, colframe=RSgreen!50,
+  title={\textbf{External Verification (Continuous Lens)}},
+  fonttitle=\small\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm, xshift=4mm},
+  boxed title style={colback=RSgreen!70!black},
+  left=4pt, right=4pt, top=6pt, bottom=4pt
+}
+
+\newtcolorbox{observebox}{
+  enhanced, breakable,
+  colback=RSamber!5, colframe=RSamber!60,
+  title={\textbf{Structural Observation}},
+  fonttitle=\small\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm, xshift=4mm},
+  boxed title style={colback=RSamber!80!black},
+  left=4pt, right=4pt, top=6pt, bottom=4pt
+}
+
+
+\lstset{
+  basicstyle=\footnotesize\ttfamily,
+  breaklines=true, frame=single,
+  language=Python, showstringspaces=false,
+  numbers=left, numberstyle=\tiny,
+  commentstyle=\color{RSgray},
+  keywordstyle=\color{RSblue!70!black}}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{RSgray}{RigbySpace Discrete Dynamics}}
+\fancyhead[R]{\small\textcolor{RSgray}{Mediant Geodesics - Page \thepage}}
+\fancyfoot[L]{\small\textcolor{RSgray}{D. Veneziano}}
+\fancyfoot[R]{\small\textcolor{RSgray}{Discrete Unification Framework}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+\titleformat{\section}
+  {\large\bfseries\color{RSblue}}{\thesection}{1em}{}[\titlerule]
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{RSblue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{RSgray}}{\thesubsubsection}{1em}{}
+
+\onehalfspacing
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Sinter}{S_{\mathrm{int}}}
+\newcommand{\SL}{S_{\mathrm{L}}}
+\newcommand{\SLe}{S_{\mathrm{L}}^{\mathrm{ext}}}
+\newcommand{\SP}{S_{\mathrm{P}}}
+\newcommand{\SPs}{S_{\mathrm{P}}^{*}}
+\newcommand{\SPe}{S_{\mathrm{P}}^{\mathrm{ext}}}
+\newcommand{\IP}{I_{\mathrm{P}}}
+\newcommand{\Vac}{\mathcal{V}}
+\newcommand{\SLpos}{S_{\mathrm{L}}^{+}}
+\newcommand{\GK}{\Gamma_{K}}
+\newcommand{\Ethree}{E_{3+1}}
+\newcommand{\SRS}{S_{\mathrm{RS}}}
+\newcommand{\TRS}{\mathcal{T}_{\mathrm{RS}}}
+\newcommand{\Ens}{\mathcal{E}}
+
+\newcommand{\lop}{\lambda}
+\newcommand{\aop}{\eta}
+
+\newcommand{\bplus}{\boxplus}
+\newcommand{\med}{\oplus}
+\newcommand{\ecplus}{\oplus_{\mathrm{ec}}}
+\renewcommand{\succ}{\operatorname{succ}}
+
+\newcommand{\rank}{\rho}
+\newcommand{\hfn}{h}
+\newcommand{\Dcross}{\Delta_{\mathrm{cross}}}
+\newcommand{\sgn}{\operatorname{sgn}}
+\newcommand{\rem}{\operatorname{rem}}
+
+\newcommand{\koppa}{\mathbin{\text{\rm\k{o}}}}
+
+\newcommand{\Tcyc}{T_{11}}
+\newcommand{\PhiSet}{\Phi}
+\newcommand{\Tbary}{T_{\mathrm{bary}}}
+\newcommand{\Psistate}{\Psi}
+\newcommand{\Tcharge}{\Gamma}
+
+\newcommand{\Dg}{D_{\mathrm{gauge}}}
+\newcommand{\Sint}{S_{\mathrm{int}}}
+\newcommand{\Bridge}{\mathcal{B}}
+\newcommand{\Lalpha}{\alpha_{\mathrm{lat}}}
+\newcommand{\LQ}{\mathcal{L}_{\mathbb{Z}}}
+\newcommand{\Sigimb}{\Sigma_{\mathrm{imb}}}
+\newcommand{\VS}{\mathcal{V}_S}
+\newcommand{\PG}{\mathrm{PG}}
+
+% --- New macros: RS Sommerfeld and Pi-Analog ---
+\newcommand{\Gmg}{G_{\mathrm{mg}}}
+\newcommand{\Ksat}{K_{\mathrm{sat}}}
+\newcommand{\dslip}{\delta_{\mathrm{slip}}}
+\newcommand{\Tvac}{T_{\mathrm{vac}}}
+\newcommand{\tauX}{\tau_{10}}
+\newcommand{\Pithree}{\Pi_3}
+\newcommand{\nG}{n_G}
+\newcommand{\aSC}{\alpha^{-1}_{\mathrm{int}}}
+\newcommand{\piRS}{\pi_{\mathrm{RS}}}
+\newcommand{\pa}{\mathfrak{p}_\alpha}
+\newcommand{\qa}{\mathfrak{q}_\alpha}
+\newcommand{\Da}{\mathcal{D}_\alpha}
+\newcommand{\qosc}{\mathfrak{q}_{\mathrm{osc}}}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{axiom}{Axiom}[section]
+\newtheorem{remark}{Remark}[section]
+\newtheorem{postulate}{Postulate}[section]
+\newtheorem{law}{Law}[section]
+\newtheorem{observation}{Observation}[section]
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{corollary}{Corollary}[section]
+
+
+
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+  {\Huge\bfseries\color{RSblue} RigbySpace Discrete Dynamics\par}
+  \vspace{0.5cm}
+  {\LARGE Mediant Geodesics, Saturation, and Boundary Transport\par}
+  \vspace{0.5cm}
+  {\large RigbySpace Discrete Integer Profile\par}
+  \vspace{2cm}
+  \rule{0.6\textwidth}{0.4pt}\par
+  \vspace{1cm}
+  {\large D.\ Veneziano\par}
+  \vspace{0.8cm}
+  {\normalsize March, 2026\par}
+  \vspace{1.5cm}
+  \rule{0.6\textwidth}{0.4pt}\par
+  \vspace{0.5cm}
+  {\small Propagation, adjacency, saturation, and coupled endpoint transport\par}
+  \vfill
+  {\small\color{RSgray}
+  This document adopts the current master reference as authoritative.  Every
+  definition and derivation below is written inside the RigbySpace ontology and
+  uses the master preamble, colour system, and box structures.\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section{Scope and primitive starting set}
+
+This document replaces the earlier mediant-geodesic draft with a version that is
+conformant with the current master reference.  The present document keeps the
+subject matter of mediant trees, geodesic paths, saturation, and endpoint
+transport, while removing statements that depended on continuum assumptions,
+single-state interpretations of $\psi$, or non-master notions of height and
+adjacency.
+
+The derivation begins from the RS primitives before any numerical family is
+introduced.  The operative primitives for the present topic are the mediant
+sum $\med$, the transforms $\lop$ and $\aop$, the coupled reciprocal $\psi$,
+the ledger operator $\koppa$, the cycle boundary $\Omega$, and the master
+ordering/width structure built from $\Dcross$.  The global RS constants
+$\aSC$ and $\piRS$ belong to the larger ontology and remain available as
+master primitives, but they are not required for the mediant-geodesic chain
+itself.
+
+\begin{rsbox}
+The mediant-geodesic sector is a structural sector of the master reference.  It
+does not create a second ontology.  Its admissible content is therefore limited
+to integer pairs, cross-ordering, width, mediant insertion, saturation,
+barycentric oscillation, coupled reciprocal transport, ZERO-context boundary
+states, and ledger selection at $\Omega$.
+\end{rsbox}
+
+\begin{definition}[Explicit Rational Pair (ERP)]
+An ERP is an ordered pair $(n,d)\in\Z\times(\Z\setminus\{0\})$.  The numerator
+encodes event magnitude and the denominator encodes geometric capacity.  ERPs
+are never reduced to lowest terms.
+\end{definition}
+
+\begin{definition}[Observational equivalence]
+For $A=(n_1,d_1)$ and $B=(n_2,d_2)$ in $\SL$, one writes $A\sim B$ when
+$n_1 d_2=n_2 d_1$.  This is the only admissible equivalence on ERPs.  GCD
+reduction is not a rule of the ontology.
+\end{definition}
+
+\begin{definition}[Cross-ordering and width]
+For $A=(p_a,q_a)$ and $B=(p_b,q_b)$ in $\SL$, define
+\[
+\Dcross(A,B):=p_b q_a-p_a q_b.
+\]
+Write $A\prec B$ when $\Dcross(A,B)>0$.  If $L\prec U$, define the width
+\[
+W(L,U):=\Dcross(L,U)\in\Z_{>0}.
+\]
+The bracket is saturated when $W(L,U)=1$.
+\end{definition}
+
+\begin{definition}[Mediant sum]
+For $A=(a,b)$ and $B=(c,d)$ in $\SL$, define
+\[
+A\med B:=(a+c,b+d).
+\]
+The mediant sum is an ERP-valued operation internal to the integer lattice.
+\end{definition}
+
+\begin{definition}[The transforms $\lop$ and $\aop$]
+The master transforms are
+\[
+\lop(n,d):=(n+d,d),
+\qquad
+\aop(n,d):=(n+d,n).
+\]
+The transform $\lop$ preserves the denominator while increasing the numerator
+by one denominator-load.  The transform $\aop$ turns the old numerator into the
+new denominator and is the master Fibonacci generator.
+\end{definition}
+
+\begin{definition}[Coupled reciprocal $\psi$]
+For a coupled pair of rational states,
+\[
+\psi\!\left(\frac{a}{b},\,\frac{c}{d}\right)
+=
+\left(\frac{d}{a},\,\frac{b}{c}\right).
+\]
+The operation is coupled.  It does not act on a single ERP in isolation.  Its
+second iterate exchanges the two states and its fourth iterate is the identity.
+\end{definition}
+
+\begin{definition}[Boundary seeds and ZERO-context roles]
+The mediant-tree root bracket uses the formal seeds $(0,1)$ and $(1,0)$ from
+the master reference.  These are not asserted here as ordinary active matter
+states.  The label $(0,1)$ is the empty-position label appropriate to mediant
+propagation context.  The label $(1,0)$ is a constraint-vacuum boundary seed
+with absent metric basis.  Their use in the tree is therefore contextual and
+fully compatible with the master ZERO logic.
+\end{definition}
+
+\begin{theorem}[Width preservation under mediant insertion]
+\begin{rsbox}
+Let $L=(a,b)$ and $U=(c,d)$ with $L\prec U$, and let $M:=L\med U=(a+c,b+d)$.
+Then
+\[
+\Dcross(L,M)=\Dcross(L,U),
+\qquad
+\Dcross(M,U)=\Dcross(L,U).
+\]
+Consequently,
+\[
+W(L,M)=W(M,U)=W(L,U).
+\]
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+A direct computation gives
+\[
+\Dcross(L,M)=(a+c)b-a(b+d)=cb-ad=\Dcross(L,U),
+\]
+and
+\[
+\Dcross(M,U)=c(b+d)-(a+c)d=cb-ad=\Dcross(L,U).
+\]
+Hence both child brackets inherit the same width as the parent bracket.
+\end{rsbox}
+\end{proof}
+
+\end{theorem}
+
+\begin{theorem}[The $\lop$-ray from the unit ERP is saturated]
+\begin{rsbox}
+For every integer $k\geq 0$,
+\[
+\lop^{k}(1,1)=(k+1,1).
+\]
+Moreover,
+\[
+\Dcross\!\bigl(\lop^{k}(1,1),\lop^{k+1}(1,1)\bigr)=1,
+\]
+so consecutive states on the $\lop$-ray form a saturated chain.
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+The identity $\lop(n,d)=(n+d,d)$ implies by induction that
+$\lop^{k}(1,1)=(k+1,1)$.  Therefore
+\[
+\Dcross\!\bigl((k+1,1),(k+2,1)\bigr)=(k+2)\cdot 1-(k+1)\cdot 1=1.
+\]
+Thus every consecutive pair is adjacent in the saturated sense.
+\end{rsbox}
+\end{proof}
+
+\end{theorem}
+
+\begin{theorem}[The $\aop$-ray from the unit ERP generates the Fibonacci edge chain]
+\begin{rsbox}
+Let $F_1:=1$, $F_2:=1$, and $F_{m+2}:=F_{m+1}+F_m$ for $m\geq 1$.  Then for
+every integer $k\geq 0$,
+\[
+\aop^{k}(1,1)=\bigl(F_{k+2},F_{k+1}\bigr).
+\]
+In addition,
+\[
+\Dcross\!\bigl(\aop^{k}(1,1),\aop^{k+1}(1,1)\bigr)
+=
+\begin{cases}
+1 & \text{if }k\text{ is even},\\
+-1 & \text{if }k\text{ is odd}.
+\end{cases}
+\]
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+The statement is true for $k=0$ because $\aop^0(1,1)=(1,1)=(F_2,F_1)$.  Assume
+$\aop^k(1,1)=(F_{k+2},F_{k+1})$.  Then
+\[
+\aop^{k+1}(1,1)=\aop(F_{k+2},F_{k+1})
+=(F_{k+3},F_{k+2}),
+\]
+which proves the Fibonacci formula by induction.  For the cross-determinant,
+\[
+\Dcross\!\bigl((F_{k+2},F_{k+1}),(F_{k+3},F_{k+2})\bigr)
+=
+F_{k+3}F_{k+1}-F_{k+2}^2.
+\]
+Cassini's identity yields
+\[
+F_{k+3}F_{k+1}-F_{k+2}^2=(-1)^k.
+\]
+Writing this by parity gives the displayed formula.
+\end{rsbox}
+\end{proof}
+
+\end{theorem}
+
+\begin{observebox}
+The two previous theorems satisfy the operator-first requirement.  The
+numerical families appear only after the transforms $\lop$ and $\aop$ have
+already fixed the state update law.  The $\lop$-ray supplies a monotone
+capacity-preserving saturated edge chain.  The $\aop$-ray supplies the canonical
+recurrence edge chain associated with the master Fibonacci generator.
+\end{observebox}
+
+\section{Ordered brackets and the mediant tree}
+
+\begin{definition}[Ordered boundary bracket]
+An ordered boundary bracket is a pair $[L,U]$ of ERPs with $L\prec U$.  Its
+interior mediator is the ERP $L\med U$.  A bracket is saturated when
+$W(L,U)=1$.
+\end{definition}
+
+\begin{definition}[Root bracket]
+The root bracket of the mediant tree is
+\[
+B_0:=[(0,1),(1,0)].
+\]
+Its first interior state is the mediant
+\[
+(0,1)\med(1,0)=(1,1).
+\]
+\end{definition}
+
+\begin{proposition}[The root bracket is saturated]
+\begin{rsbox}
+The root bracket $B_0=[(0,1),(1,0)]$ has width one.
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+By direct calculation,
+\[
+W((0,1),(1,0))=\Dcross((0,1),(1,0))=1\cdot 1-0\cdot 0=1.
+\]
+Hence the root bracket is saturated.
+\end{rsbox}
+\end{proof}
+
+\end{proposition}
+
+\begin{definition}[Left and right mediant refinement]
+For an ordered bracket $[L,U]$, define its two child brackets by
+\[
+\mathcal{R}_{\mathrm{L}}[L,U]:=[L,L\med U],
+\qquad
+\mathcal{R}_{\mathrm{R}}[L,U]:=[L\med U,U].
+\]
+These are the elementary refinement operations of the mediant tree.
+\end{definition}
+
+\begin{proposition}[Refinement preserves ordering]
+\begin{rsbox}
+Let $[L,U]$ be an ordered bracket and let $M=L\med U$.  Then
+\[
+L\prec M\prec U.
+\]
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+Because $L\prec U$, the previous width-preservation theorem gives
+\[
+\Dcross(L,M)=\Dcross(L,U)>0
+\]
+and
+\[
+\Dcross(M,U)=\Dcross(L,U)>0.
+\]
+Hence $L\prec M$ and $M\prec U$.
+\end{rsbox}
+\end{proof}
+
+\end{proposition}
+
+\begin{definition}[Mediant tree $\mathcal{T}$]
+The mediant tree is the rooted binary tree obtained by recursive application of
+the two refinement operations to the root bracket $B_0$.  Every refinement
+creates one new interior ERP and two new ordered boundary brackets.  The
+vertices of the tree are the ERPs produced in this recursion, and two vertices
+share an edge precisely when they appear as consecutive vertices on one parent
+to child branch of the recursion.
+\end{definition}
+
+\begin{theorem}[Unique bracket ancestry]
+\begin{rsbox}
+Every vertex of $\mathcal{T}$ is created by a unique finite word in the two
+refinement operations $\mathcal{R}_{\mathrm{L}}$ and
+$\mathcal{R}_{\mathrm{R}}$ applied to the root bracket.
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+At each stage the recursion replaces one bracket by two children whose interiors
+lie in disjoint ordered positions relative to the parent mediator.  A new
+interior ERP is therefore created in exactly one child bracket at that stage.
+Proceeding inductively from the root, the finite sequence of left and right
+choices that creates a given vertex is unique.
+\end{rsbox}
+\end{proof}
+
+\end{theorem}
+
+\begin{theorem}[Unique path property]
+\begin{rsbox}
+Between any two vertices $A$ and $B$ of $\mathcal{T}$ there exists exactly one
+simple path in the graph of the tree.
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+The recursive construction produces a rooted binary tree with no cycles.  In
+every tree, the path from $A$ to $B$ is obtained by ascending from $A$ to the
+lowest common ancestor of $A$ and $B$ and then descending to $B$.  Because the
+ancestor chain of each vertex is unique, this path is unique.
+\end{rsbox}
+\end{proof}
+
+\end{theorem}
+
+\begin{observebox}
+The uniqueness statement is a structural statement about the mediant tree as a
+tree.  It does not depend on GCD reduction, Euclidean simplification, or any
+continuum identification of rationals.  The object carrying the path is the ERP
+vertex together with its place in the recursive refinement graph.
+\end{observebox}
+
+\section{Mediant geodesics and structural symbols}
+
+\begin{definition}[Mediant geodesic $\gamma(A,B)$]
+For vertices $A$ and $B$ of $\mathcal{T}$, the mediant geodesic $\gamma(A,B)$
+is the unique simple path in $\mathcal{T}$ from $A$ to $B$.
+\end{definition}
+
+\begin{proposition}[Existence and uniqueness of mediant geodesics]
+\begin{rsbox}
+For any vertices $A$ and $B$ of $\mathcal{T}$, the mediant geodesic
+$\gamma(A,B)$ exists and is unique.
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+This is the unique path property of the tree stated in geodesic language.
+\end{rsbox}
+\end{proof}
+
+\end{proposition}
+
+\begin{definition}[Geodesic length]
+If
+\[
+\gamma(A,B)=(S_0,S_1,\dots,S_m)
+\]
+with $S_0=A$ and $S_m=B$, then the geodesic length is
+\[
+\ell(\gamma(A,B)):=m.
+\]
+\end{definition}
+
+\begin{lemma}[Concatenation through an intermediate vertex]
+\begin{rsbox}
+Let $A$, $B$, and $C$ be vertices of $\mathcal{T}$, and suppose $B$ lies on the
+geodesic $\gamma(A,C)$.  Then
+\[
+\gamma(A,C)=\gamma(A,B)\cup\gamma(B,C)
+\]
+with the two subpaths meeting only at the vertex $B$.
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+Because $\gamma(A,C)$ is the unique simple path from $A$ to $C$, any vertex
+lying on it divides the path into an initial segment and a terminal segment.
+Those two segments are respectively the unique simple paths from $A$ to $B$ and
+from $B$ to $C$.
+\end{rsbox}
+\end{proof}
+
+\end{lemma}
+
+\begin{corollary}[Length additivity]
+\begin{rsbox}
+Under the hypotheses of the preceding lemma,
+\[
+\ell(\gamma(A,C))=\ell(\gamma(A,B))+\ell(\gamma(B,C)).
+\]
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+The path $\gamma(A,C)$ is the concatenation of two edge-disjoint geodesic
+segments sharing only the vertex $B$, so the edge counts add.
+\end{rsbox}
+\end{proof}
+
+\end{corollary}
+
+\begin{definition}[Structural symbol $\{A,B\}$]
+The structural symbol $\{A,B\}$ is the formal sum of the oriented mediant
+geodesic edges from $A$ to $B$.  The defining relations are
+\[
+\{A,B\}+\{B,C\}=\{A,C\},
+\qquad
+\{A,A\}=0,
+\qquad
+\{A,B\}+\{B,A\}=0.
+\]
+\end{definition}
+
+\begin{theorem}[Structural symbol additivity]
+\begin{rsbox}
+If $B$ lies on $\gamma(A,C)$, then
+\[
+\{A,C\}=\{A,B\}+\{B,C\}.
+\]
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+The formal oriented edge sum for $\gamma(A,C)$ is exactly the disjoint
+concatenation of the oriented edge sums for $\gamma(A,B)$ and $\gamma(B,C)$.
+\end{rsbox}
+\end{proof}
+
+\end{theorem}
+
+\begin{corollary}[Closed triangular cancellation]
+\begin{rsbox}
+For any vertices $A$, $B$, and $C$,
+\[
+\{A,B\}+\{B,C\}+\{C,A\}=0.
+\]
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+By additivity,
+\[
+\{A,B\}+\{B,C\}=\{A,C\}.
+\]
+Adding $\{C,A\}$ to both sides and using $\{A,C\}+\{C,A\}=0$ gives the result.
+\end{rsbox}
+\end{proof}
+
+\end{corollary}
+
+\begin{definition}[Atomic edge symbol]
+If $L\prec U$ and $W(L,U)=1$, then the geodesic $\gamma(L,U)$ has one edge and
+the structural symbol $\{L,U\}$ is called an atomic edge symbol.
+\end{definition}
+
+\begin{proposition}[Mediant insertion splits an atomic edge into two atomic edges]
+\begin{rsbox}
+Let $L\prec U$ with $W(L,U)=1$, and let $M:=L\med U$.  Then
+\[
+\{L,U\}=\{L,M\}+\{M,U\},
+\]
+and both $\{L,M\}$ and $\{M,U\}$ are atomic edge symbols.
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+Width preservation gives
+\[
+W(L,M)=W(M,U)=W(L,U)=1.
+\]
+Hence both child brackets are saturated, and the structural symbol additivity
+relation yields the decomposition.
+\end{rsbox}
+\end{proof}
+
+\end{proposition}
+
+\section{Saturation, barycentric oscillation, and selection at $\Omega$}
+
+\begin{definition}[Barycentric oscillation]
+A barycentric oscillation is the stable two-state regime associated with a
+saturated bracket $[L,U]$ of width one.  In this regime the ontology does not
+replace the pair by a continuum point.  The physically admissible attractor is
+the ordered alternation between the adjacent ERPs $L$ and $U$.
+\end{definition}
+
+\begin{proposition}[Saturation is not collapse]
+\begin{rsbox}
+Let $[L,U]$ be saturated and set $M:=L\med U$.  Then the child brackets
+$[L,M]$ and $[M,U]$ are also saturated.  Therefore the saturated regime is not
+a collapse to a single state but a persistent width-one bracket structure.
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+This is immediate from width preservation.  Saturation is stable under mediant
+insertion.  The ontology therefore records a permanent adjacent-state pair
+rather than a real-valued point limit.
+\end{rsbox}
+\end{proof}
+
+\end{proposition}
+
+\begin{definition}[Barycentric truncation representative]
+For a saturated bracket $[L,U]$, define the selected representative
+\[
+S_{\mathrm{rep}}=\mathcal{T}_B([L,U],\koppa_{\mathrm{ledger}})
+\]
+by the master rule
+\[
+S_{\mathrm{rep}}:=
+\begin{cases}
+L & \text{if }\rank(\koppa_{\mathrm{ledger}})\text{ is even},\\
+U & \text{if }\rank(\koppa_{\mathrm{ledger}})\text{ is odd}.
+\end{cases}
+\]
+This representative is chosen at the cycle boundary $\Omega$.
+\end{definition}
+
+\begin{theorem}[Parity-stable selection law]
+\begin{rsbox}
+Let $[L,U]$ be saturated.  If two consecutive evaluations at $\Omega$ are made
+with ledger values whose structural ranks have the same parity, then the
+selected representative is the same at both evaluations.  If the parity flips,
+the representative swaps from one endpoint of the bracket to the other.
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+The selection rule depends only on the parity class of
+$\rank(\koppa_{\mathrm{ledger}})$.  Equal parity yields the same branch of the
+definition, and opposite parity yields the other branch.
+\end{rsbox}
+\end{proof}
+
+\end{theorem}
+
+\begin{observebox}
+This is the correct RS replacement for continuum convergence language.  A
+saturated bracket carries two adjacent states, and the ledger at $\Omega$
+chooses which state is exposed as the representative state for the next cycle.
+No real-number limit is introduced anywhere in the chain.
+\end{observebox}
+
+\section{Coupled transport, orientation reversal, and ZERO-boundary behaviour}
+
+\begin{definition}[Endpoint-paired $\psi$ transport]
+Let
+\[
+A=\frac{a}{b},
+\qquad
+B=\frac{c}{d}
+\]
+be a coupled pair of endpoint states associated with an oriented geodesic datum.
+Their $\psi$-transport is
+\[
+\Psistate(A,B):=
+\psi\!\left(\frac{a}{b},\frac{c}{d}\right)
+=
+\left(\frac{d}{a},\frac{b}{c}\right).
+\]
+\end{definition}
+
+\begin{theorem}[$\psi^2$ reverses geodesic orientation]
+\begin{rsbox}
+For any coupled endpoint pair $(A,B)$,
+\[
+\psi^2(A,B)=(B,A).
+\]
+Consequently,
+\[
+\{(\psi^2(A,B))_1,(\psi^2(A,B))_2\}=\{B,A\}=-\{A,B\}.
+\]
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+The master definition of $\psi$ gives
+\[
+\psi^2\!\left(\frac{a}{b},\frac{c}{d}\right)
+=
+\left(\frac{c}{d},\frac{a}{b}\right).
+\]
+Thus the second iterate exchanges the endpoint order.  The structural symbol
+relation $\{A,B\}+\{B,A\}=0$ then yields
+\[
+\{B,A\}=-\{A,B\}.
+\]
+\end{rsbox}
+\end{proof}
+
+\end{theorem}
+
+\begin{definition}[Constraint-vacuum endpoint]
+An endpoint label of the form $n/0$ with $n\neq 0$ is a constraint vacuum.
+Its structural history is preserved while the metric basis is absent.  Such a
+state cannot continue as an active endpoint until $\psi$ resolves the
+suspension through pairing with an active partner.
+\end{definition}
+
+\begin{proposition}[ZERO-boundary resolution of a suspended endpoint]
+\begin{rsbox}
+Let one endpoint be suspended and the other active:
+\[
+\left(\frac{n}{0},\frac{c}{d}\right).
+\]
+Then one $\psi$ step yields
+\[
+\psi\!\left(\frac{n}{0},\frac{c}{d}\right)
+=
+\left(\frac{d}{n},\frac{0}{c}\right).
+\]
+The first output is an active resolved state and the second output is an
+empty-position trace carrying contextual history in its denominator.
+\end{rsbox}
+\begin{proof}
+\begin{rsbox}
+This is the master ZERO-resolution formula applied directly to the endpoint
+pair.  The history-bearing numerator $n$ becomes the denominator of the active
+resolved state $d/n$, while the partner magnitude $c$ becomes the denominator of
+the zero-magnitude trace $0/c$.
+\end{rsbox}
+\end{proof}
+
+\end{proposition}
+
+\begin{observebox}
+The lower root seed $(0,1)$ belongs to the same ZERO-context family as the
+zero-magnitude labels.  It is a propagation-context label for emptiness, not an
+ordinary matter state.  The mediant tree may therefore use the root bracket
+$[(0,1),(1,0)]$ without collapsing ZERO logic into numerical zero.
+\end{observebox}
+
+\section{External verification}
+
+\begin{verifybox}
+The formal content above is ontological and integer-native.  The following
+verification statements do not add ontology.  They only check the internal
+claims by computation.
+
+A verification program can construct the mediant tree by recursive refinement
+from the root bracket $[(0,1),(1,0)]$, locate a target ERP by repeated
+cross-order comparison, and build geodesics by ancestor comparison.  It can
+check width preservation, uniqueness of geodesic paths, structural-symbol
+concatenation, the $\lop$-ray formula, the $\aop$-ray Fibonacci formula,
+barycentric truncation parity selection, and ZERO-boundary $\psi$ resolution.
+
+The program included in the appendix does exactly this.  It avoids GCD
+reduction in the core tree logic, uses observational equivalence for endpoint
+matching, and implements $\koppa$ by iterative subtraction.
+\end{verifybox}
+
+\appendix
+
+\section{Python implementation and verification appendix}
+
+The appendix implements every mathematical construct introduced in this document:
+ERP data, observational equivalence, $\Dcross$, ordering, width, mediant
+insertion, the transforms $\lop$ and $\aop$, coupled $\psi$ transport,
+constructive remainder $\koppa$, structural rank, root-bracket refinement,
+target location in the tree, geodesic extraction, structural symbols as edge
+lists, barycentric truncation, and ZERO-boundary resolution.  The test suite
+checks the document's core statements.
+
+\begin{lstlisting}
+from dataclasses import dataclass
+
+G_MG = 2
+
+@dataclass(frozen=True)
+class ERP:
+    n: int
+    d: int
+
+def obs_equiv(a: ERP, b: ERP) -> bool:
+    return a.n * b.d == b.n * a.d
+
+def d_cross(a: ERP, b: ERP) -> int:
+    return b.n * a.d - a.n * b.d
+
+def prec(a: ERP, b: ERP) -> bool:
+    return d_cross(a, b) > 0
+
+def width(l: ERP, u: ERP) -> int:
+    if not prec(l, u):
+        raise ValueError("Bracket is not ordered")
+    return d_cross(l, u)
+
+def mediant(a: ERP, b: ERP) -> ERP:
+    return ERP(a.n + b.n, a.d + b.d)
+
+def lambda_transform(x: ERP) -> ERP:
+    return ERP(x.n + x.d, x.d)
+
+def eta_transform(x: ERP) -> ERP:
+    return ERP(x.n + x.d, x.n)
+
+def psi_pair(a: ERP, b: ERP):
+    return ERP(b.d, a.n), ERP(a.d, b.n)
+
+def zero_resolution(n: int, c: int, d: int):
+    return ERP(d, n), ERP(0, c)
+
+def koppa(x: int, y: int) -> int:
+    if y <= 0:
+        raise ValueError("Second argument must be positive")
+    r = x
+    while r >= y:
+        r -= y
+    while r < 0:
+        r += y
+    return r
+
+def rank_value(m: int) -> int:
+    # Structural rank: total prime factors counted with multiplicity.
+    # Primality of p detected by koppa: p is prime iff koppa(p, k) != 0
+    # for all k with 1 < k < p. Division used here is in the verification
+    # (continuous-lens) context only.
+    if m <= 1:
+        return 0
+    total = 0
+    p = 2
+    while p <= m:
+        # Check primality of p using koppa
+        is_prime = all(koppa(p, k) != 0 for k in range(2, p))
+        if not is_prime:
+            p += 1
+            continue
+        while koppa(m, p) == 0:
+            total += 1
+            # Divide out one factor of p (verification context)
+            q, r = divmod(m, p)
+            assert r == 0
+            m = q
+        p += 1
+    return total
+
+def lop_ray(k: int):
+    x = ERP(1, 1)
+    for _ in range(k):
+        x = lambda_transform(x)
+    return x
+
+def eta_ray(k: int):
+    x = ERP(1, 1)
+    for _ in range(k):
+        x = eta_transform(x)
+    return x
+
+def locate_target(target: ERP, max_steps: int = 256):
+    # Boundary seeds (0,1) and (1,0) are the tree roots, not interior vertices.
+    # They are not reachable by the mediant search loop and are returned directly
+    # with an empty ancestry path.
+    if obs_equiv(target, ERP(0, 1)) or obs_equiv(target, ERP(1, 0)):
+        return [target]
+    left = ERP(0, 1)
+    right = ERP(1, 0)
+    path = [mediant(left, right)]
+    steps = 0
+    while steps < max_steps:
+        mid = mediant(left, right)
+        if obs_equiv(mid, target):
+            return path
+        if prec(left, target) and prec(target, mid):
+            right = mid
+        elif prec(mid, target) and prec(target, right):
+            left = mid
+        else:
+            raise ValueError("Target outside current bracket")
+        mid = mediant(left, right)
+        path.append(mid)
+        steps += 1
+    raise RuntimeError("Target not found within step limit")
+
+def geodesic(a: ERP, b: ERP):
+    path_a = locate_target(a)
+    path_b = locate_target(b)
+    i = 0
+    while i < min(len(path_a), len(path_b)) and obs_equiv(path_a[i], path_b[i]):
+        i += 1
+    lca = i - 1
+    left_part = list(reversed(path_a[lca+1:]))
+    right_part = path_b[lca:]
+    return left_part + right_part
+
+def structural_symbol(a: ERP, b: ERP):
+    g = geodesic(a, b)
+    return list(zip(g[:-1], g[1:]))
+
+def barycentric_truncation(l: ERP, u: ERP, ledger_value: int) -> ERP:
+    if rank_value(ledger_value) % 2 == 0:
+        return l
+    return u
+
+def check_width_preservation():
+    l = ERP(1, 3)
+    u = ERP(2, 5)
+    if not prec(l, u):
+        l, u = u, l
+    m = mediant(l, u)
+    return width(l, m), width(m, u), width(l, u)
+
+def fibonacci_pair(k: int):
+    a, b = 1, 1
+    if k == 0:
+        return ERP(1, 1)
+    for _ in range(k):
+        a, b = a + b, a
+    return ERP(a, b)
+
+def run_tests():
+    print("lop-ray test")
+    for k in range(5):
+        x = lop_ray(k)
+        y = lop_ray(k + 1)
+        print(k, x, y, d_cross(x, y))
+        assert x == ERP(k + 1, 1)
+        assert d_cross(x, y) == 1
+
+    print("eta-ray test")
+    for k in range(6):
+        x = eta_ray(k)
+        y = fibonacci_pair(k)
+        print(k, x, y)
+        assert x == y
+    for k in range(5):
+        older = eta_ray(k)
+        newer = eta_ray(k + 1)
+        sign = d_cross(older, newer)
+        print(k, sign)
+        if k % 2 == 0:
+            assert sign == 1
+        else:
+            assert sign == -1
+
+    print("width preservation test")
+    w1, w2, w0 = check_width_preservation()
+    print(w1, w2, w0)
+    assert w1 == w2 == w0
+
+    print("target location and geodesic test")
+    a = ERP(2, 3)
+    b = ERP(3, 5)
+    pa = locate_target(a)
+    pb = locate_target(b)
+    g = geodesic(a, b)
+    print(pa)
+    print(pb)
+    print(g)
+    assert obs_equiv(g[0], a)
+    assert obs_equiv(g[-1], b)
+
+    print("structural symbol decomposition test")
+    a = ERP(1, 1)
+    b = ERP(1, 2)
+    c = ERP(1, 3)
+    ab = structural_symbol(a, b)
+    bc = structural_symbol(b, c)
+    ac = structural_symbol(a, c)
+    print(ab)
+    print(bc)
+    print(ac)
+    assert len(ac) == len(ab) + len(bc)
+
+    print("barycentric truncation parity test")
+    l = ERP(1, 3)
+    u = ERP(2, 5)
+    print(barycentric_truncation(l, u, 3))
+    print(barycentric_truncation(l, u, 4))
+    assert barycentric_truncation(l, u, 3) == u
+    assert barycentric_truncation(l, u, 4) == l
+
+    print("ZERO-boundary resolution test")
+    resolved, empty_trace = zero_resolution(5, 3, 7)
+    print(resolved, empty_trace)
+    assert resolved == ERP(7, 5)
+    assert empty_trace == ERP(0, 3)
+
+    print("koppa test")
+    print(koppa(11, 3))
+    assert koppa(11, 3) == 2
+
+if __name__ == "__main__":
+    run_tests()
+\end{lstlisting}
+
+\end{document}

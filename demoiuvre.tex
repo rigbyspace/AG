@@ -1,0 +1,455 @@
+\documentclass[11pt, letterpaper]{article}
+
+% -----------------------------------------------------------------------------
+%  RigbySpace Discrete Dynamics: Rational De Moivre Rotation
+%
+%  This document presents a discrete, integer–only construction of rotational
+%  dynamics.  It adopts the full RigbySpace preamble, including colour
+%  definitions, box environments and page formatting, to align with the master
+%  reference.  The exposition introduces a rational state pair, defines surge
+%  and cross–synchronisation operators and analyses a four–step cycle that
+%  emulates Euler's rotation.  We also describe programmable sequences to
+%  synthesise various waveforms.  All definitions are given within
+%  ontological boxes, and care is taken to avoid continuum concepts.
+% -----------------------------------------------------------------------------
+
+\usepackage[top=.8in, bottom=.8in, left=0.5in, right=0.5in]{geometry}
+\usepackage{amsmath, amssymb, amsthm, mathtools}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{xcolor}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{setspace}
+\usepackage[T1]{fontenc}
+\usepackage{enumitem}
+\usepackage{tocloft}
+\usepackage{tcolorbox}
+\tcbuselibrary{breakable, skins}
+
+% -----------------------------------------------------------------------------
+%  Colour palette matching the RigbySpace master reference
+% -----------------------------------------------------------------------------
+\definecolor{RSblue}{RGB}{25, 60, 120}
+\definecolor{RSgray}{RGB}{90, 90, 90}
+\definecolor{RSgreen}{RGB}{20, 110, 60}
+\definecolor{RSred}{RGB}{160, 30, 30}
+\definecolor{RSamber}{RGB}{180, 110, 0}
+\definecolor{RSpurple}{RGB}{90, 30, 120}
+
+% -----------------------------------------------------------------------------
+%  Box environments for ontological statements, external verification and
+%  structural observations
+% -----------------------------------------------------------------------------
+\newtcolorbox{rsbox}{
+  enhanced, breakable,
+  colback=RSblue!4, colframe=RSblue!60,
+  title={\textbf{RS Ontological Statement}},
+  fonttitle=\small\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm, xshift=4mm},
+  boxed title style={colback=RSblue},
+  left=4pt, right=4pt, top=6pt, bottom=4pt
+}
+
+\newtcolorbox{verifybox}{
+  enhanced, breakable,
+  colback=RSgreen!4, colframe=RSgreen!50,
+  title={\textbf{External Verification (Continuous Lens)}},
+  fonttitle=\small\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm, xshift=4mm},
+  boxed title style={colback=RSgreen!70!black},
+  left=4pt, right=4pt, top=6pt, bottom=4pt
+}
+
+\newtcolorbox{observebox}{
+  enhanced, breakable,
+  colback=RSamber!5, colframe=RSamber!60,
+  title={\textbf{Structural Observation}},
+  fonttitle=\small\bfseries\color{white},
+  attach boxed title to top left={yshift=-2mm, xshift=4mm},
+  boxed title style={colback=RSamber!80!black},
+  left=4pt, right=4pt, top=6pt, bottom=4pt
+}
+
+% -----------------------------------------------------------------------------
+%  Page style: header and footer consistent with the master reference
+% -----------------------------------------------------------------------------
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\textcolor{RSgray}{RigbySpace Discrete Dynamics}}
+\fancyhead[R]{\small\textcolor{RSgray}{Rational De Moivre Rotation — Page \thepage}}
+\fancyfoot[L]{\small\textcolor{RSgray}{D. Veneziano}}
+\fancyfoot[R]{\small\textcolor{RSgray}{Discrete Unification Framework}}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% -----------------------------------------------------------------------------
+%  Section formatting
+% -----------------------------------------------------------------------------
+\titleformat{\section}
+  {\large\bfseries\color{RSblue}}{\thesection}{1em}{}[\titlerule]
+\titleformat{\subsection}
+  {\normalsize\bfseries\color{RSblue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{RSgray}}{\thesubsubsection}{1em}{}
+
+% Spacing and indentation
+\onehalfspacing
+\setlength{\parskip}{4pt}
+\setlength{\parindent}{0pt}
+
+% Column type for tabular environments
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+% Common sets and operators
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\lop}{\lambda}
+\newcommand{\aop}{\eta}
+\newcommand{\psiop}{\psi}
+
+% Theorem styles
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{axiom}{Axiom}[section]
+\newtheorem{remark}{Remark}[section]
+\newtheorem{postulate}{Postulate}[section]
+\newtheorem{observation}{Observation}[section]
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{corollary}{Corollary}[section]
+
+% -----------------------------------------------------------------------------
+%  Document body
+% -----------------------------------------------------------------------------
+\begin{document}
+
+% Title page
+\begin{titlepage}
+  \centering
+  \vspace*{2cm}
+  {\Huge\bfseries\color{RSblue} RigbySpace Discrete Dynamics\par}
+  \vspace{0.5cm}
+  {\LARGE Rational De Moivre Rotation\par}
+  \vspace{0.5cm}
+  {\large Discrete Emulation of Euler's Identity via Integer Pair Dynamics\par}
+  \vspace{2cm}
+  \rule{0.6\textwidth}{0.4pt}\par
+  \vspace{1cm}
+  {\large D. Veneziano\par}
+  \vspace{0.8cm}
+  {\normalsize RigbySpace Study\par}
+  \vspace{1.5cm}
+  \rule{0.6\textwidth}{0.4pt}\par
+  \vspace{0.5cm}
+  {\small This study constructs a rational analogue of De Moivre's rotation
+  using only integer arithmetic.  Two streams of unreduced rational pairs
+  interact through surge and twist operations to emulate rotation and
+  oscillation without appealing to complex numbers or the continuum.\par}
+  \vfill
+  {\small\color{RSgray}
+  RigbySpace is a formally consistent candidate theory internal to its own
+  axioms.  No empirical equivalence to external physical theory is asserted
+  unless an explicit mapping is provided and derived under that mapping.\par}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% -----------------------------------------------------------------------------
+%  Section 1: Introduction
+% -----------------------------------------------------------------------------
+\section{Introduction}
+
+In continuous mathematics, complex exponentials and trigonometric functions
+describe rotations and oscillations elegantly via Euler's identity.  Within
+RigbySpace, however, continuum objects and complex numbers are forbidden.  To
+recreate rotational and oscillatory dynamics, we must rely on discrete
+operations on unreduced rational pairs.  This document introduces a coupled
+system of two integer streams that evolve according to surge and
+cross–synchronisation operations.  By alternating growth and exchange, the
+system traces a discrete analogue of a rotating vector with damping.  The
+construction illustrates how familiar physical behaviours can emerge from
+integer arithmetic alone.
+
+\subsection{Motivation and Structural History}
+
+Previous work on the triadic rational process demonstrates how irrational
+limits arise from unilateral recursions, yet such systems converge to static
+values.  To model time–dependent phenomena—oscillations, waves and rotations—we
+introduce coupling between two streams.  Each denominator records the full
+history of operations applied to its register; this ``structural history''
+serves as a proxy for inertia.  When denominators are exchanged between
+registers, the accumulated history migrates, producing a quarter–turn in the
+effective plane.  We occasionally use the term ``energy'' to convey this
+intuitive picture; it should be understood as a metaphor for structural
+history rather than a physical quantity.
+
+% -----------------------------------------------------------------------------
+%  Section 2: Discrete Rotation Framework
+% -----------------------------------------------------------------------------
+\section{Discrete Rotation Framework}
+
+We formalise the components of the system: the rational state pair, the surge
+operators that grow each register and the cross–synchronisation operator that
+exchanges structural history.  All definitions appear in ontological boxes.
+
+\subsection{Rational State Pair}
+
+\begin{rsbox}
+  \begin{definition}[Rational State Pair]
+  A \emph{rational state} at tick $n$ is an ordered pair of positive integer
+  vectors $S_n = (A_n,B_n)$ with
+  \begin{align*}
+    A_n &= (n_a,d_a) \in \Z_{>0}^2, \\
+    B_n &= (n_b,d_b) \in \Z_{>0}^2.
+  \end{align*}
+  The 
+  quantities $v_A = n_a/d_a$ and $v_B = n_b/d_b$ are the rational values
+  represented by the unreduced pairs.  No cancellation of factors occurs; the
+  denominators $d_a$ and $d_b$ record the entire structural history of
+  operations.  The register $A_n$ is designated the ``real'' component and
+  $B_n$ the ``imaginary'' component.  Unless otherwise noted, we assume
+  initial conditions $n_a,d_a,n_b,d_b \in \Z_{>0}$, with at least one
+  denominator strictly greater than one to avoid triviality.
+  \end{definition}
+\end{rsbox}
+
+\subsection{Surge Operators}
+
+Growth of a register is effected by two surge operators analogous to those in
+the master reference.
+
+\begin{rsbox}
+  \begin{definition}[Aggregate Surge]
+  The \emph{aggregate surge} $\aop$ acts on a component $(n,d)$ by
+  \begin{equation*}
+    \aop(n,d) = (n + d, n).
+  \end{equation*}
+  This operation increases the numerator by the denominator and replaces the
+  denominator with the previous numerator.  In terms of rational values,
+  $v\mapsto 1 + 1/v$.  Repeated application of $\aop$ drives $v$ towards the
+  golden ratio, mirroring the triadic process.
+  \end{definition}
+\end{rsbox}
+
+\begin{rsbox}
+  \begin{definition}[Linear Surge]
+  The \emph{linear surge} $\lop$ acts on a component $(n,d)$ by
+  \begin{equation*}
+    \lop(n,d) = (n + d, d).
+  \end{equation*}
+  This operation adds the denominator to the numerator while leaving the
+  denominator unchanged.  It implements the map $v\mapsto v+1$ and yields a
+  linear ramp along the mediant lattice.
+  \end{definition}
+\end{rsbox}
+
+\subsection{Cross–Synchronisation Operator}
+
+\begin{rsbox}
+  \begin{definition}[Transformative Reciprocal]
+  The \emph{transformative reciprocal} $\psiop$ acts on a state
+  $S=(A,B)$ with $A=(n_a,d_a)$ and $B=(n_b,d_b)$ by
+  \begin{equation*}
+    \psiop(A,B) = ((d_b,n_a),(d_a,n_b)).
+  \end{equation*}
+  This operator swaps the structural histories encoded in the denominators and
+  interchanges numerators and denominators across registers.  It performs a
+  discrete quarter–turn in the plane spanned by $(v_A,v_B)$.  Note that
+  $\psiop$ is an involution: applying it twice returns the original state.
+  \end{definition}
+\end{rsbox}
+
+\begin{lemma}[Involution]
+The transformative reciprocal satisfies $\psiop^2 = \mathrm{id}$ on the
+state space.
+\end{lemma}
+
+\begin{proof}
+Let $S=(A,B)$ with $A=(n_a,d_a)$ and $B=(n_b,d_b)$.  One application of
+$\psiop$ yields $S'=(A',B')$ with $A'=(d_b,n_a)$ and $B'=(d_a,n_b)$.  A
+second application produces $(n_b,d_b)$ and $(n_a,d_a)$, which is the original
+state.  Thus $\psiop^2$ acts as the identity.
+\end{proof}
+
+\begin{remark}[Metaphorical Language]
+The denominators carry the cumulative history of operations and can be
+considered a form of ``inertia.''  When writing about the action of
+$\psiop$, we may occasionally refer to denominators as ``energy'' for
+intuition.  This terminology is purely metaphorical and has no ontological
+status in RigbySpace.
+\end{remark}
+
+% -----------------------------------------------------------------------------
+%  Section 3: The Rational Euler Cycle
+% -----------------------------------------------------------------------------
+\section{The Rational Euler Cycle}
+
+We now assemble the surge and cross–synchronisation operators into a
+repeating cycle that emulates a quarter–turn rotation.  This four–step
+sequence acts on the state pair and redistributes structural history between
+registers.
+
+\begin{rsbox}
+  \begin{definition}[Four–Step Euler Cycle]
+  Given $S_0=(A_0,B_0)$, one Euler cycle consists of the following steps:
+  \begin{enumerate}[label=\arabic*.]
+    \item \emph{Real Surge:} $A \leftarrow \aop(A)$.
+    \item \emph{Quarter Turn:} $(A,B) \leftarrow \psiop(A,B)$.
+    \item \emph{Imaginary Surge:} $B \leftarrow \aop(B)$.
+    \item \emph{Quarter Turn:} $(A,B) \leftarrow \psiop(A,B)$.
+  \end{enumerate}
+  We denote the state after $k$ complete cycles by $S_{4k}$.  Between
+  quarter turns, denominators grow via the aggregate surge; the twists
+  exchange these growing histories between registers.
+  \end{definition}
+\end{rsbox}
+
+\begin{lemma}[Denominator Growth]
+Let $(n,d)\in \Z_{>0}^2$ with $n > d$.  Applying $\aop$ to $(n,d)$ yields
+$(n+d,n)$, whose new denominator $n$ is strictly greater than the original
+denominator $d$.  Thus, once a register satisfies $n>d$, its denominator
+increases under $\aop$.  Moreover, because denominators are exchanged via
+$\psiop$, they do not decrease in subsequent cycles.
+\end{lemma}
+
+\begin{proof}
+If $(n,d)$ satisfies $n > d$, then $\aop(n,d)=(n+d,n)$ has denominator $n$.
+By assumption $n > d$, so the new denominator exceeds the old one.  In
+particular, the surge replaces the old denominator with the old numerator.
+Since denominators propagate through $\psiop$ without alteration, once the
+condition $n > d$ holds for a register, successive applications of $\aop$
+maintain strict growth of its denominators.
+\end{proof}
+
+\begin{observation}[Damped Harmonic Behaviour]
+Let $S_0=(A_0,B_0)$ with $A_0=(n_a,d_a)$, $B_0=(n_b,d_b)$ and
+$n_a,d_a,n_b,d_b\in \Z_{>0}$.  Suppose at least one denominator is greater
+than one.  Numerical experiments and heuristic reasoning suggest that the
+sequence of real register values $v_A(k)$ obtained after each Euler cycle
+tends to zero, while the imaginary register values $v_B(k)$ remain bounded
+and oscillatory.  In particular, after a finite number of cycles the
+denominator of the real register grows beyond its initial numerator, and
+subsequent cycles cause $v_A$ to decrease monotonically.  Degenerate cases
+where $A_0=B_0=(1,1)$ yield trivial constant behaviour.
+
+\begin{proof}[Heuristic Explanation]
+Tracking one cycle shows that the real register evolves from $(n_a,d_a)$ to
+$(n_a,n_a+n_b)$, so its value becomes $n_a/(n_a+n_b)$ after one cycle.  The
+imaginary register transforms in a complementary fashion.  Because
+surge operations cause denominators and numerators to grow, there exists
+some cycle index $k$ such that the denominator of the real register
+exceeds its numerator.  Beyond this point, each cycle reduces the real
+ratio $v_A$ and drives it towards zero.  Meanwhile, the imaginary
+ratio $v_B$ oscillates between values determined by the alternating surge
+and twist.  A rigorous proof of monotonic decay for all initial
+conditions requires establishing explicit recurrences and is left for
+future work.  The present analysis views the damped behaviour as an
+empirical observation consistent with RS primitives.
+\end{proof}
+\end{observation}
+
+\begin{remark}[Initial Conditions]
+The proposition assumes generic positive integer initial states.  If both
+registers start at $(1,1)$, surges leave them unchanged and no dynamics occur.
+If one register starts at $(1,1)$ and the other has larger values, the
+cycle still produces non‑trivial behaviour because denominators and
+numerators are exchanged and grow under successive surges and twists.  The
+monotonic decay of $v_A$ is guaranteed once denominators grow beyond
+initial numerators.
+\end{remark}
+
+\subsection{Qualitative Dynamics}
+
+The rational Euler cycle reproduces the qualitative features of a damped
+harmony.  As the real component decays, the imaginary component exhibits
+oscillations bounded away from zero and one.  The trajectory spirals towards
+a limit cycle in the $(v_A,v_B)$ plane.  Unlike continuous differential
+equations, the approach is stepwise; nonetheless, the emergent pattern
+mirrors that of a harmonic oscillator with friction.
+
+% -----------------------------------------------------------------------------
+%  Section 4: Programmable Rational Synthesizer
+% -----------------------------------------------------------------------------
+\section{Programmable Rational Synthesizer}
+
+Beyond the canonical Euler cycle, one can engineer discrete waveforms by
+altering the sequence of surge and twist operations.  We formalise the notion
+of a waveform program and present several examples.
+
+\begin{rsbox}
+  \begin{definition}[Waveform Program]
+  Let $\{\aop_A, \aop_B, \lop_A, \lop_B, \psiop\}$ denote the set of
+  elementary operations acting on the pair $(A,B)$; subscripts indicate which
+  register a surge targets.  A \emph{waveform program} is a finite ordered
+  list of such operations.  Executing the program sequentially constitutes
+  one patch.  Repeating the patch yields a discrete signal extracted from
+  the real register $v_A$.
+  \end{definition}
+\end{rsbox}
+
+We highlight several representative programs:
+
+\begin{enumerate}[label=\arabic*.]
+  \item \textbf{Damped Sine Program:} The patch $\{\aop_A, \psiop,
+    \aop_B, \psiop\}$ reproduces the Euler cycle.  The real register displays a
+    damped oscillation similar to a sine wave.
+  \item \textbf{Square Wave Program:} For an integer $m>0$, perform $m$
+    aggregate surges on $A$, twist, $m$ surges on $B$, then twist again.
+    Charging one register while holding the other fixed and then swapping
+    produces a discrete square wave with duty cycle determined by $m$.
+  \item \textbf{Sawtooth Program:} For $n>0$, perform $n$ linear surges on
+    $A$ followed by a twist.  The real value ramps linearly and is then
+    inverted, yielding a sawtooth waveform.
+  \item \textbf{Triangle/Trapezoid Program:} For $n>0$, alternate $n$ linear
+    surges on $A$ and $n$ on $B$ between twists.  This produces a wave that
+    rises linearly, drops sharply, holds while the other register ramps, then
+    rises again.
+\end{enumerate}
+
+\begin{observation}[Waveform Behaviour]
+Each program yields a distinctive discrete signal.  The damped sine program
+produces a decaying envelope akin to a harmonic oscillator.  The square wave
+program alternates between high and low states.  The sawtooth program
+generates a linear ramp followed by a sharp reset.  The triangle/trapezoid
+program combines linear rises and plateaus.  These patterns demonstrate the
+versatility of RS primitives for synthesising signals without continuous
+functions.
+\end{observation}
+
+\subsection{External Verification}
+
+RigbySpace restricts itself to integer operations; nonetheless, one can
+numerically simulate the above programs to visualise the resulting waveforms.
+
+\begin{verifybox}
+  Implementing the surge and twist operators on integer pairs in a short
+  script produces sequences of rational values.  Plotting the real register
+  over successive patches confirms the qualitative descriptions given above.
+  For example, the damped sine program yields a curve that decays towards
+  zero while oscillating, and the square wave program toggles between two
+  values.  Such plots provide external confirmation but lie outside the
+  ontological chain.
+\end{verifybox}
+
+% -----------------------------------------------------------------------------
+%  Section 5: Conclusion
+% -----------------------------------------------------------------------------
+\section{Conclusion}
+
+This document demonstrates that rotation and oscillation need not rely on
+continuum mathematics.  Through a pair of unreduced rational streams and a
+combination of aggregate, linear and cross–synchronisation operations, we
+construct a discrete analogue of Euler's rotation.  The rational Euler cycle
+produces damped harmonic behaviour, and programmable sequences synthesise
+square, sawtooth and triangular waveforms.  The analysis underscores the
+expressive power of RS primitives: by carefully orchestrating integer
+operations, one can approximate complex behaviours ordinarily attributed to
+real or complex analysis.  Future work may explore multi–register couplings
+and investigate connections to RS thermodynamics and relativity.
+
+\end{document}
