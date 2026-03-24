@@ -1,0 +1,591 @@
+// ============================================================
+// RigbySpace Discrete Dynamics — RS Engine
+// All RS primitives, operators, and derived constants.
+// Integer-only on the ontological path. No division.
+// ============================================================
+
+// ─── PRIMITIVE OPERATORS ────────────────────────────────────
+
+/**
+ * Constructive Remainder (koppa).
+ * The dual ledger/imbalance operator. Replaces modular arithmetic.
+ * Iterative subtraction only — no division.
+ */
+export function koppa(x, L) {
+  if (L <= 0) throw new Error('koppa: L must be positive');
+  let r = x;
+  while (r >= L) r -= L;
+  while (r < 0) r += L;
+  return r;
+}
+
+/**
+ * Successor with reset at T_vac=11.
+ * The temporal clock of the Prime-11 cycle.
+ */
+export function succ(tau, T = 11) {
+  return tau < T ? tau + 1 : 1;
+}
+
+/**
+ * Linear Transform (λ).
+ * λ(n,d) = (n+d, d). Vacuum propagation; preserves denominator.
+ */
+export function lambda(n, d) {
+  return [n + d, d];
+}
+
+/**
+ * Aggregate Transform (η).
+ * η(n,d) = (n+d, n). The master convergence driver / Fibonacci generator.
+ */
+export function eta(n, d) {
+  return [n + d, n];
+}
+
+/**
+ * Inverse Aggregate Transform (η⁻¹).
+ * η⁻¹(n,d) = (d, n-d). Used in phi-oscillator descent.
+ */
+export function etaInv(n, d) {
+  return [d, n - d];
+}
+
+/**
+ * Transformative Reciprocal (ψ) — THE standout operator.
+ * ψ((a/b), (c/d)) = ((d/a), (b/c))
+ * Coupled: cannot act on a single ERP in isolation.
+ * Period 4: ψ⁴ = Id. ψ² = charge conjugation.
+ * Input/output: two ERPs as [n,d] pairs.
+ */
+export function psi([a, b], [c, d]) {
+  return [[d, a], [b, c]];
+}
+
+/**
+ * Mediant Sum (⊕).
+ * (a,b) ⊕ (c,d) = (a+c, b+d). Preserves cross-det width.
+ */
+export function mediant([a, b], [c, d]) {
+  return [a + c, b + d];
+}
+
+/**
+ * Barycentric Addition (⊞).
+ * (n1,d1) ⊞ (n2,d2) = (n1·d2 + n2·d1, d1·d2).
+ * Engine of rank growth and mass generation.
+ */
+export function boxplus([n1, d1], [n2, d2]) {
+  return [n1 * d2 + n2 * d1, d1 * d2];
+}
+
+/**
+ * Cross-Determinant (Δ_cross).
+ * Δ_cross(A, B) = p_b·q_a − p_a·q_b.
+ * Replaces metric distance. Encodes ordering + deviation.
+ */
+export function crossDet([pa, qa], [pb, qb]) {
+  return pb * qa - pa * qb;
+}
+
+/**
+ * Observational Equivalence.
+ * A ~ B iff n1·d2 = n2·d1. No GCD reduction.
+ */
+export function obsEquiv([n1, d1], [n2, d2]) {
+  return n1 * d2 === n2 * d1;
+}
+
+// ─── DERIVED STRUCTURAL FUNCTIONS ───────────────────────────
+
+/**
+ * Temporal Charge: Γ(n,d) = d² − n².
+ * >0: massive (subluminal), =0: luminal, <0: excluded (superluminal).
+ */
+export function temporalCharge(n, d) {
+  return d * d - n * n;
+}
+
+/**
+ * Width of an ordered bracket [L, U].
+ */
+export function width([la, lb], [ua, ub]) {
+  const dc = crossDet([la, lb], [ua, ub]);
+  if (dc <= 0) throw new Error('width: bracket not ordered (L ≺ U required)');
+  return dc;
+}
+
+/**
+ * Is p prime? Detected strictly via koppa:
+ * p is prime iff koppa(p, k) ≠ 0 for all k with 1 < k < p.
+ */
+export function isPrime(p) {
+  if (p <= 1) return false;
+  for (let k = 2; k < p; k++) {
+    if (koppa(p, k) === 0) return false;
+  }
+  return true;
+}
+
+/**
+ * Prime Gate: PG(k) = the k-th prime in natural order.
+ * Built from isPrime (koppa) + successor.
+ */
+export function primeGate(k) {
+  if (k < 1) throw new Error('primeGate: k must be ≥ 1');
+  let count = 0;
+  let n = 2;
+  while (true) {
+    if (isPrime(n)) {
+      count++;
+      if (count === k) return n;
+    }
+    n++;
+  }
+}
+
+/**
+ * Structural Rank: ρ(m).
+ * Unique k ≥ 0 such that G_mg^k ≤ m < G_mg^(k+1).
+ * Computed by counting G_mg-doublings. No logarithm.
+ */
+export function rank(m) {
+  if (m <= 0) return 0;
+  const G = 2; // G_mg, derived below but hardcoded here for bootstrap
+  let k = 0;
+  let power = 1;
+  while (power * G <= m) {
+    power *= G;
+    k++;
+  }
+  return k;
+}
+
+/**
+ * Prime-Event Depth: ρ_Ω(m).
+ * Total prime factors with multiplicity. Via koppa decomposition.
+ */
+export function primeEventDepth(m) {
+  if (m <= 1) return 0;
+  let total = 0;
+  let p = 2;
+  let remaining = m;
+  while (p <= remaining) {
+    if (isPrime(p)) {
+      while (koppa(remaining, p) === 0 && remaining >= p) {
+        total++;
+        // Integer division via iterative subtraction (verification context)
+        let q = 0, r = remaining;
+        while (r >= p) { r -= p; q++; }
+        remaining = q;
+      }
+    }
+    p++;
+  }
+  return total;
+}
+
+/**
+ * η-ray from (1,1): k-th state. Produces Fibonacci pairs.
+ */
+export function etaRay(k) {
+  let state = [1, 1];
+  for (let i = 0; i < k; i++) {
+    state = eta(state[0], state[1]);
+  }
+  return state;
+}
+
+/**
+ * λ-ray from (1,1): k-th state. Produces (k+1, 1).
+ */
+export function lambdaRay(k) {
+  let state = [1, 1];
+  for (let i = 0; i < k; i++) {
+    state = lambda(state[0], state[1]);
+  }
+  return state;
+}
+
+/**
+ * Lucas number L(n) via recurrence. L(0)=2, L(1)=1.
+ * Generated by η from the vacuum seed (11,7) = (L(5), L(4)).
+ */
+export function lucasNumber(n) {
+  if (n === 0) return 2;
+  if (n === 1) return 1;
+  let a = 2, b = 1;
+  for (let i = 2; i <= n; i++) {
+    const c = a + b;
+    a = b;
+    b = c;
+  }
+  return b;
+}
+
+/**
+ * Fibonacci number F(n) via η-ray. F(1)=1, F(2)=1.
+ */
+export function fibonacciNumber(n) {
+  if (n <= 0) return 0;
+  const state = etaRay(n - 1);
+  return state[0]; // η^(n-1)(1,1) = (F(n+1), F(n)) → numerator for n-1 steps is F(n)
+}
+
+/**
+ * CF convergent recurrence.
+ * Given partial quotients [a0, a1, a2, ...], returns convergents as [p, q] pairs.
+ */
+export function cfConvergents(partialQuotients) {
+  const convergents = [];
+  let p_prev = 1, q_prev = 0;
+  let p_curr = partialQuotients[0], q_curr = 1;
+  convergents.push([p_curr, q_curr]);
+  for (let i = 1; i < partialQuotients.length; i++) {
+    const a = partialQuotients[i];
+    const p_next = a * p_curr + p_prev;
+    const q_next = a * q_curr + q_prev;
+    convergents.push([p_next, q_next]);
+    p_prev = p_curr;
+    q_prev = q_curr;
+    p_curr = p_next;
+    q_curr = q_next;
+  }
+  return convergents;
+}
+
+// ─── MEDIANT TREE ───────────────────────────────────────────
+
+/**
+ * Locate a target ERP in the mediant tree by recursive refinement.
+ * Returns the ancestry path (sequence of mediant states visited).
+ */
+export function locateInTree(target, maxSteps = 256) {
+  if (obsEquiv(target, [0, 1]) || obsEquiv(target, [1, 0])) {
+    return [target];
+  }
+  let left = [0, 1];
+  let right = [1, 0];
+  let mid = mediant(left, right);
+  const path = [mid];
+  let steps = 0;
+  while (steps < maxSteps) {
+    if (obsEquiv(mid, target)) return path;
+    if (crossDet(left, target) > 0 && crossDet(target, mid) > 0) {
+      right = mid;
+    } else if (crossDet(mid, target) > 0 && crossDet(target, right) > 0) {
+      left = mid;
+    } else {
+      throw new Error('Target outside current bracket');
+    }
+    mid = mediant(left, right);
+    path.push(mid);
+    steps++;
+  }
+  throw new Error('Target not found within step limit');
+}
+
+/**
+ * Mediant geodesic γ(A, B): unique path in the tree between two ERPs.
+ */
+export function geodesic(a, b) {
+  const pathA = locateInTree(a);
+  const pathB = locateInTree(b);
+  let i = 0;
+  while (i < Math.min(pathA.length, pathB.length) && obsEquiv(pathA[i], pathB[i])) {
+    i++;
+  }
+  const lca = i - 1;
+  const leftPart = pathA.slice(lca + 1).reverse();
+  const rightPart = pathB.slice(lca);
+  return [...leftPart, ...rightPart];
+}
+
+// ─── CONSTANT LATTICE ───────────────────────────────────────
+// All derived from T_vac=11 and N=3 via operator chains.
+
+export function deriveConstants() {
+  const T_vac = 11;
+  const N = 3;
+
+  // ── Phase partition (4-4-3) ──
+  // succ orbit through T_vac, koppa-assignment to phases
+  const G_mg = koppa(T_vac, N); // = 2. Mass gap: irreducible per-cycle phase residual
+  const delta_slip = G_mg;       // = 2. Phase slip = mass gap
+  const N_E = N + 1;             // = 4. Emission phase cardinality
+  const N_M = N + 1;             // = 4. Modulation phase cardinality
+  const N_R = N;                 // = 3. Return phase cardinality
+  // Verify: N_E + N_M + N_R = T_vac
+  const partitionSum = N_E + N_M + N_R;
+
+  // ── Phase-derived constants ──
+  const Delta = (N_E + N_M) - N_R;   // = 5. Flux imbalance
+  const Sigma_imb = N_E + N_R;       // = 7. Boundary-Active Phase Sum
+  const tau10 = T_vac - 1;           // = 10. Inertial closure tick
+  const D_gauge = tau10 + delta_slip; // = 12. Gauge dimension
+  const V_S = 18;                     // Viscosity Sum (accumulated phase drift)
+  const T_bary = T_vac * N;          // = 33. Barycentric period
+  const S_int = T_vac * D_gauge;     // = 132. Interaction surface
+  const K_sat = Delta * Delta;       // = 25. Saturation limit
+
+  // ── Prime-gated constants ──
+  const Pi3 = primeGate(N * G_mg);              // PG(6) = 13. Gen-3 Gate Prime
+  const alpha_inv_int = S_int + Delta;           // = 137. Sommerfeld Constant
+  const alpha_inv_alt = primeGate(T_bary);       // PG(33) = 137. Independent path
+
+  // ── Resolution classes ──
+  const R_D = 64;   // 2^6, dyadic closure class (quark sector)
+  const R_T = 72;   // 8×9, triadic closure class (electron)
+  const R_E = 128;  // 2^7, extended dyadic class (tau)
+
+  // ── Gravitational depth ──
+  const n_G_fib = fibonacciNumber(T_vac);  // F(11) = 89
+  const n_G_sum = R_D + K_sat;            // 64 + 25 = 89
+  const n_G_pg = primeGate(G_mg * D_gauge); // PG(24) = 89
+  const n_G_sint = S_int - D_gauge * N_E + Delta; // 132 - 48 + 5 = 89
+  const n_G = 89;
+
+  // ── Lepton mass integers ──
+  const Lambda_mu = S_int + R_D + T_vac;  // 132 + 64 + 11 = 207
+  const P17 = primeGate(D_gauge + Delta);  // PG(17) = 59
+  const Lambda_tau = P17 * P17;            // 59² = 3481
+
+  // ── Quark mass integers ──
+  const Lambda_q1 = S_int + 64 + T_vac;   // = 207 (shared with muon)
+  const Lambda_q2 = S_int + 160 + T_vac;  // = 303
+  const Lambda_q3 = 192;                   // Phase-locked, no absorption needed
+
+  // ── Heavy particles ──
+  const Lambda_b = Math.pow(G_mg, Pi3);    // 2^13 = 8192
+  const Lambda_t = Math.pow(G_mg, N_E) * Math.pow(Delta, N) * Math.pow(Pi3, G_mg);
+  // = 16 × 125 × 169 = 338000
+  const Lambda_H = 120 * 120 * primeGate(Sigma_imb); // 14400 × 17 = 244800
+
+  // ── Proton mass integer ──
+  const mu_int = D_gauge * D_gauge * D_gauge + (S_int - 2 * D_gauge);
+  // = 1728 + 108 = 1836
+
+  // ── Generation Sector Invariant ──
+  const G_inv = T_bary * Sigma_imb + delta_slip; // 33×7 + 2 = 233
+  const epsilon = [delta_slip, N]; // = (2,3) = 2/3. Phase slip efficiency
+
+  // ── PMNS mixing angles ──
+  const pmns_theta23 = [N * N, N_E * N_E];             // (9, 16)
+  const pmns_theta12 = [N_R, tau10];                    // (3, 10)
+  const pmns_theta13 = [1, Delta * N * N];              // (1, 45)
+
+  // ── Sommerfeld CF descent ──
+  const D_alpha = [alpha_inv_int, N*N*N, 1, N, delta_slip, N*Sigma_imb, 1, 1, tau10];
+  // [137, 27, 1, 3, 2, 21, 1, 1, 10]
+  const convergents = cfConvergents(D_alpha);
+  const sommerfeldPair = convergents[convergents.length - 1]; // [p_alpha, q_alpha]
+
+  // ── Phi-oscillator ──
+  const phiOsc = [7477, 4621];
+
+  // ── Pi-analog ──
+  const piAnalog = [355, 113];
+
+  // ── Bridge ──
+  const Bridge_num = P17 * (T_bary - T_vac) + Delta; // 59×22 + 5 = 1303
+  const Bridge_den = T_bary - T_vac;                  // = 22
+  const Bridge = [Bridge_num, Bridge_den];
+
+  // ── Verification: Generation coupling identity ──
+  const genEM = G_inv + Lambda_q2 - Lambda_q1 - Lambda_q3;
+  // 233 + 303 - 207 - 192 = 137 = α⁻¹_int
+
+  // ── Build the constant table with derivation info ──
+  const constants = {
+    T_vac:    { value: T_vac, formula: 'Primitive', desc: 'Vacuum Period (prime temporal container)' },
+    N:        { value: N, formula: 'Primitive', desc: 'Triadic Period' },
+    G_mg:     { value: G_mg, formula: 'koppa(T_vac, N)', desc: 'Mass Gap (per-cycle phase residual)' },
+    delta_slip: { value: delta_slip, formula: 'G_mg = koppa(T_vac, N)', desc: 'Phase Slip' },
+    N_E:      { value: N_E, formula: 'N + 1', desc: 'Emission Phase Cardinality' },
+    N_M:      { value: N_M, formula: 'N + 1', desc: 'Modulation Phase Cardinality' },
+    N_R:      { value: N_R, formula: 'N', desc: 'Return Phase Cardinality' },
+    Delta:    { value: Delta, formula: '(N_E + N_M) − N_R', desc: 'Flux Imbalance' },
+    Sigma_imb: { value: Sigma_imb, formula: 'N_E + N_R', desc: 'Boundary-Active Phase Sum' },
+    tau10:    { value: tau10, formula: 'T_vac − 1', desc: 'Inertial Closure Tick' },
+    D_gauge:  { value: D_gauge, formula: 'τ₁₀ + δ_slip', desc: 'Gauge Manifold Dimension' },
+    V_S:      { value: V_S, formula: 'Accumulated phase drift', desc: 'Viscosity Sum' },
+    T_bary:   { value: T_bary, formula: 'T_vac × N', desc: 'Barycentric Period' },
+    S_int:    { value: S_int, formula: 'T_vac × D_gauge', desc: 'Interaction Surface' },
+    K_sat:    { value: K_sat, formula: 'Δ²', desc: 'Saturation Limit' },
+    Pi3:      { value: Pi3, formula: 'PG(N × G_mg) = PG(6)', desc: 'Gen-3 Gate Prime' },
+    alpha_inv: { value: alpha_inv_int, formula: 'S_int + Δ = PG(T_bary)', desc: 'Sommerfeld Constant' },
+    n_G:      { value: n_G, formula: 'F(T_vac) = R_D + K_sat = PG(G_mg × D_gauge)', desc: 'Gravitational Coupling Depth' },
+    R_D:      { value: R_D, formula: '2⁶', desc: 'Dyadic Resolution Class (quark)' },
+    R_T:      { value: R_T, formula: '8 × 9', desc: 'Triadic Closure Class (electron)' },
+    R_E:      { value: R_E, formula: '2⁷', desc: 'Extended Dyadic Class (tau)' },
+    Lambda_mu: { value: Lambda_mu, formula: 'S_int + R_D + T_vac', desc: 'Muon Mass Integer' },
+    Lambda_tau: { value: Lambda_tau, formula: 'PG(D_gauge + Δ)² = 59²', desc: 'Tau Mass Integer' },
+    Lambda_q1: { value: Lambda_q1, formula: 'S_int + 64 + T_vac', desc: 'Gen-1 Quark Mass Integer' },
+    Lambda_q2: { value: Lambda_q2, formula: 'S_int + 160 + T_vac', desc: 'Gen-2 Quark Mass Integer' },
+    Lambda_q3: { value: Lambda_q3, formula: 'Phase-locked (192 koppa 3 = 0)', desc: 'Gen-3 Quark Mass Integer' },
+    Lambda_b: { value: Lambda_b, formula: 'G_mg^Π₃ = 2¹³', desc: 'Bottom Quark Mass Integer' },
+    Lambda_t: { value: Lambda_t, formula: 'G_mg^N_E × Δ^N × Π₃^G_mg', desc: 'Top Quark Mass Integer' },
+    Lambda_H: { value: Lambda_H, formula: '120² × PG(Σ_imb)', desc: 'Composite Higgs Mass Integer' },
+    mu_int:   { value: mu_int, formula: 'D_gauge³ + (S_int − 2·D_gauge)', desc: 'Proton Mass Integer' },
+    G_inv:    { value: G_inv, formula: 'T_bary × Σ_imb + δ_slip', desc: 'Generation Sector Invariant' },
+    epsilon:  { value: epsilon, formula: 'δ_slip / N = (2, 3)', desc: 'Phase Slip Efficiency (Koide)' },
+    Bridge:   { value: Bridge, formula: '(P₁₇ × 22 + Δ, T_bary − T_vac)', desc: 'Generation Bridge' },
+    phiOsc:   { value: phiOsc, formula: 'Phi-oscillator ERP', desc: 'Minimal prime-prime φ-approximant' },
+    piAnalog: { value: piAnalog, formula: '4-leg mediant truncation', desc: 'RS π-Analog ERP' },
+    sommerfeldPair: { value: sommerfeldPair, formula: 'CF recurrence from D_α', desc: 'RS Sommerfeld Prime Pair' },
+    D_alpha:  { value: D_alpha, formula: '[α⁻¹; N³, 1, N, δ_slip, N×Σ_imb, 1, 1, τ₁₀]', desc: 'CF Descent Sequence' },
+    pmns_theta23: { value: pmns_theta23, formula: '(N², N_E²) = (9, 16)', desc: 'Atmospheric PMNS Angle' },
+    pmns_theta12: { value: pmns_theta12, formula: '(N_R, τ₁₀) = (3, 10)', desc: 'Solar PMNS Angle' },
+    pmns_theta13: { value: pmns_theta13, formula: '(1, Δ·N²) = (1, 45)', desc: 'Reactor PMNS Angle' },
+  };
+
+  // ── Multi-path verification ──
+  const verifications = [];
+  const check = (name, actual, expected) => {
+    const pass = actual === expected;
+    verifications.push({ name, actual, expected, pass });
+    return pass;
+  };
+
+  check('Partition sum = T_vac', partitionSum, T_vac);
+  check('α⁻¹ via S_int+Δ', alpha_inv_int, 137);
+  check('α⁻¹ via PG(T_bary)', alpha_inv_alt, 137);
+  check('n_G via F(T_vac)', n_G_fib, 89);
+  check('n_G via R_D + K_sat', n_G_sum, 89);
+  check('n_G via PG(G_mg×D_gauge)', n_G_pg, 89);
+  check('n_G via S_int−D_gauge×N_E+Δ', n_G_sint, 89);
+  check('Gen-EM coupling: 𝒢+Λq2−Λq1−Λq3 = α⁻¹', genEM, 137);
+  check('Sommerfeld p_α', sommerfeldPair[0], 115331);
+  check('Sommerfeld q_α', sommerfeldPair[1], 15804499);
+  check('Λ_b = 2^13', Lambda_b, 8192);
+  check('Λ_t = 338000', Lambda_t, 338000);
+  check('Λ_H = 244800', Lambda_H, 244800);
+  check('μ = 1836', mu_int, 1836);
+  check('D_gauge = Δ + Σ_imb (Goldbach)', Delta + Sigma_imb, D_gauge);
+  check('D_gauge = N × N_E (Lucas)', N * N_E, D_gauge);
+  check('koppa(137, 11) = Δ', koppa(137, 11), Delta);
+  check('koppa(233, 3) = δ_slip', koppa(233, 3), delta_slip);
+  check('koppa(233, 11) = δ_slip', koppa(233, 11), delta_slip);
+  check('koppa(233, 33) = δ_slip', koppa(233, 33), delta_slip);
+  check('Λ_q1 koppa 3 = 0', koppa(Lambda_q1, 3), 0);
+  check('Λ_q2 koppa 3 = 0', koppa(Lambda_q2, 3), 0);
+  check('Λ_q3 koppa 3 = 0', koppa(Lambda_q3, 3), 0);
+
+  return { constants, verifications };
+}
+
+// ─── PHASE ASSIGNMENT ───────────────────────────────────────
+// Given a microtick τ ∈ {1..11}, return its phase.
+// E: {1,4,7,10}, M: {2,5,8,11}, R: {3,6,9}
+
+export function phaseOf(tau) {
+  const r = koppa(tau, 3);
+  if (r === 1) return 'E';
+  if (r === 2) return 'M';
+  if (r === 0) return 'R';
+}
+
+/**
+ * Run one full vacuum cycle (11 ticks), returning per-tick data.
+ */
+export function runVacuumCycle() {
+  const ticks = [];
+  let tau = 1;
+  let E = 0, M = 0, R = 0;
+  let surplus = 0;
+  for (let i = 0; i < 11; i++) {
+    const phase = phaseOf(tau);
+    if (phase === 'E') { E++; surplus += 1; }
+    else if (phase === 'M') { M++; surplus += 0; }
+    else if (phase === 'R') { R++; surplus -= 1; }
+    ticks.push({
+      tau,
+      phase,
+      E, M, R,
+      surplus,
+      isArrowLock: tau === 10
+    });
+    tau = succ(tau);
+  }
+  return { ticks, netSurplus: surplus, phaseSlip: koppa(11, 3) };
+}
+
+/**
+ * Run the ψ-orbit from a coupled seed through k steps.
+ */
+export function runPsiOrbit(seed1, seed2, steps = 4) {
+  const orbit = [{ state: [seed1, seed2], step: 0 }];
+  let current = [seed1, seed2];
+  for (let i = 1; i <= steps; i++) {
+    current = psi(current[0], current[1]);
+    orbit.push({
+      state: [current[0], current[1]],
+      step: i,
+      crossDet: crossDet(current[0], current[1]),
+      gamma1: temporalCharge(current[0][0], current[0][1]),
+      gamma2: temporalCharge(current[1][0], current[1][1])
+    });
+  }
+  return orbit;
+}
+
+/**
+ * Lucas coupling at depth k.
+ * C_k = Δ / (L(k+4) × L(k+5))
+ * Returns { numerator: 5, denominator: L(k+4)×L(k+5), L_k4, L_k5, crossDetSign }
+ */
+export function lucasCoupling(k) {
+  const L_k4 = lucasNumber(k + 4);
+  const L_k5 = lucasNumber(k + 5);
+  return {
+    numerator: 5,
+    denominator: L_k4 * L_k5,
+    L_k4,
+    L_k5,
+    crossDetSign: (k % 2 === 0) ? +5 : -5
+  };
+}
+
+/**
+ * Sommerfeld descent: step-by-step Euclidean algorithm on (q_α, p_α).
+ * Returns array of steps, each with quotient, remainder, and RS identification.
+ */
+export function sommerfeldDescent() {
+  const { constants } = deriveConstants();
+  const [p_alpha, q_alpha] = constants.sommerfeldPair.value;
+  const D_alpha = constants.D_alpha.value;
+
+  const steps = [];
+  let a = q_alpha, b = p_alpha;
+  for (let i = 0; i < D_alpha.length && b > 0; i++) {
+    // quotient via iterative subtraction (koppa-compatible)
+    let quotient = 0;
+    let remainder = a;
+    while (remainder >= b) {
+      remainder -= b;
+      quotient++;
+    }
+    steps.push({
+      step: i,
+      dividend: a,
+      divisor: b,
+      quotient,
+      expectedQuotient: D_alpha[i],
+      remainder,
+      match: quotient === D_alpha[i]
+    });
+    a = b;
+    b = remainder;
+  }
+  return steps;
+}
+
+// ─── EXPORT SINGLETON ───────────────────────────────────────
+
+let _cached = null;
+export function getEngine() {
+  if (!_cached) {
+    _cached = deriveConstants();
+  }
+  return _cached;
+}

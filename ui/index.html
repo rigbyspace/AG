@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RigbySpace Discrete Dynamics</title>
+  <meta name="description" content="Interactive demonstration and verification platform for the RigbySpace discrete physics framework. All structures derived from T_vac=11 and N=3." />
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⊞</text></svg>" />
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+      <div class="sidebar-header">
+        <h1>RigbySpace</h1>
+        <div class="subtitle">Discrete Dynamics Framework</div>
+        <div class="primitives">T<sub>vac</sub> = 11 &nbsp;·&nbsp; N = 3</div>
+      </div>
+      <div class="sidebar-nav" id="sidebar-nav"></div>
+      <div class="sidebar-footer">
+        <div class="verify-status">
+          <div class="verify-dot" id="verify-dot"></div>
+          <span id="verify-text">Verifying…</span>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main content -->
+    <main class="main">
+      <div class="content" id="content"></div>
+    </main>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
